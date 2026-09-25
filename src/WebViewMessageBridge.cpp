@@ -18,17 +18,12 @@ namespace WebViewMessageBridge {
 		return result;
 	}
 
-	void from_json(const nlohmann::json& json, MessageData& data)
-	{
-		data.value = json.value("message", "");
-	}
-
 	void from_json(const nlohmann::json& json, Message& message)
 	{
+		message.id = json.value("id", "");
 		message.type = json.value("type", "");
-
-		if (json.contains("data") && json["data"].is_object()) {
-			message.data = json["data"].get<MessageData>();
+		if (json.contains("value") && json["value"].is_object()) {
+			message.value = json["value"];
 		}
 	}
 
@@ -64,16 +59,16 @@ namespace WebViewMessageBridge {
 	{
 		try {
 			std::string jsonString = WideToUtf8(message);
-			nlohmann::json json = nlohmann::json::parse(jsonString);
+			json json = nlohmann::json::parse(jsonString);
 			Message message = json.get<Message>();
 			messageHandler(message);
 		}
-		catch (const nlohmann::json::exception&) {
+		catch (const json::exception&) {
 			// TODO: 处理非法 JSON
 			auto Unknown = Message{
 				"-1",
 				MessageEnumToString(MessageEnum::Unknown),
-				{"Json格式错误"}
+				{"Json Error"}
 			};
 			messageHandler(Unknown);
 		}

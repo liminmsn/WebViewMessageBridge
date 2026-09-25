@@ -4,16 +4,13 @@
 #include <Windows.h>
 
 namespace WebViewMessageBridge {
+	using nlohmann::json;
+
 	std::string WideToUtf8(const wchar_t* value);
-
-	struct MessageData {
-		std::string value;
-	};
-
 	struct Message {
 		std::string id;
 		std::string type;
-		MessageData data;
+		json value;
 	};
 
 	enum class MessageEnum {
@@ -25,8 +22,7 @@ namespace WebViewMessageBridge {
 		Error
 	};
 
-	void from_json(const nlohmann::json& json, MessageData& data);
-	void from_json(const nlohmann::json& json, Message& message);
+	void from_json(const json& json, Message& message);
 
 	MessageEnum MessageEnumFromString(const std::string& type);
 	std::string MessageEnumToString(MessageEnum type);
